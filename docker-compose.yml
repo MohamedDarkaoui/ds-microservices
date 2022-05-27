@@ -1,0 +1,20 @@
+version: "3.3"
+
+services:
+    ui:
+        build:
+            context: ./services/ui
+            dockerfile: Dockerfile
+        ports:
+            - "5000:5000"
+        volumes:
+            - './services/ui:/usr/src/app'
+
+    users:
+        build:
+            context: ./services/users
+            dockerfile: Dockerfile
+        ports:
+            - "5001:5000"
+        volumes:
+            - './services/users:/usr/src/app'
