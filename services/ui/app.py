@@ -56,7 +56,6 @@ def actual_login():
     # microservice returns True if correct combination, False if otherwise.
     # ================================
 
-
     data = {'username':req_username, 'password':req_password}
 
     req = requests.get("http://users:5000/api/login?username={}&password={}".format(req_username,req_password))

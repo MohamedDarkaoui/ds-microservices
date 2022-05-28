@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from webargs.flaskparser import use_kwargs
 from webargs import fields
-from api import users
+import dbconnection
 
 
 class Register(Resource):
@@ -29,8 +29,23 @@ class Register(Resource):
           401:
             description: Does not exist
         """
-        if username in users:
-            return {"status" : "denied"}, 401
+        check_querry = "SELECT * FROM users WHERE username = %s"
+        check_params = tuple(username)
 
-        users[username] = password
+        querry = "INSERT INTO users VALUES (%s,%s)"
+        params = (username, password)
+
+        connection = dbconnection.connect()
+        cursor = dbconnection.create_cursor(connection)
+        check_result = dbconnection.select_querry(cursor, check_querry, check_params)
+
+
+        if len(check_result) != 0:
+          cursor.close()
+          connection.close()
+          return {"status" : "denied"}, 401
+        dbconnection.insert_querry(cursor, querry, params)
+        connection.commit()
+        cursor.close()
+        connection.close()
         return {"status": "accepted"}, 200

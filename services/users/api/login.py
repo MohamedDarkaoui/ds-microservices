@@ -2,6 +2,7 @@ from flask_restful import Resource
 from webargs.flaskparser import use_kwargs
 from webargs import fields
 from api import users
+import dbconnection
 
 class Login(Resource):
 
@@ -28,8 +29,16 @@ class Login(Resource):
           401:
             description: Does not exist
         """
+        querry = "SELECT * FROM users WHERE username = %s and password = %s"
+        params = (username, password)
 
-        if username in users and users[username] == password:
+        connection = dbconnection.connect()
+        cursor = dbconnection.create_cursor(connection)
+        result = dbconnection.select_querry(cursor, querry, params)
+        cursor.close()
+        connection.close()
+
+        if len(result) != 0:
           return {"status" : "accepted"}, 200
 
         return {"status": "denied"}, 401
