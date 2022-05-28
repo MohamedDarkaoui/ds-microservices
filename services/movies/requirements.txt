@@ -1,0 +1,5 @@
+flask
+flask_restful
+webargs
+flasgger
+psycopg2-binary

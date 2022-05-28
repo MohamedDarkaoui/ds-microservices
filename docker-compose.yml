@@ -29,3 +29,21 @@ services:
             - POSTGRES_USER=postgres
             - POSTGRES_PASSWORD=postgres
 
+    movies:
+        build:
+            context: ./services/movies
+            dockerfile: Dockerfile
+        ports:
+            - "5002:5000"
+        volumes:
+            - './services/movies:/usr/src/app'
+
+    movies-db:
+        build:
+            context: ./services/movies/db
+            dockerfile: Dockerfile
+        ports:
+            - "5436:5432"
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres

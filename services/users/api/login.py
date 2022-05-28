@@ -1,7 +1,6 @@
 from flask_restful import Resource
 from webargs.flaskparser import use_kwargs
 from webargs import fields
-from api import users
 import dbconnection
 
 class Login(Resource):
@@ -25,16 +24,15 @@ class Login(Resource):
             description: the password
         responses:
           200:
-            description: Exists
+            description: accepted
           401:
-            description: Does not exist
+            description: unauthorized
         """
         querry = "SELECT * FROM users WHERE username = %s and password = %s"
-        params = (username, password)
 
         connection = dbconnection.connect()
         cursor = dbconnection.create_cursor(connection)
-        result = dbconnection.select_querry(cursor, querry, params)
+        result = dbconnection.select_querry(cursor, querry, (username, password,))
         cursor.close()
         connection.close()
 

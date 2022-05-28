@@ -15,7 +15,7 @@ class Register(Resource):
         """
         Connection request
         ---
-        description: "Checks whether the username and password combination exists."
+        description: "Adds a new user to the database."
         parameters:
           - in: query
             name: username
@@ -25,26 +25,26 @@ class Register(Resource):
             description: the password
         responses:
           200:
-            description: Exists
+            description: accepted
           401:
-            description: Does not exist
+            description: unauthorized
         """
         check_querry = "SELECT * FROM users WHERE username = %s"
-        check_params = tuple(username)
 
         querry = "INSERT INTO users VALUES (%s,%s)"
-        params = (username, password)
 
+        #check if user already exists
         connection = dbconnection.connect()
         cursor = dbconnection.create_cursor(connection)
-        check_result = dbconnection.select_querry(cursor, check_querry, check_params)
-
+        check_result = dbconnection.select_querry(cursor, check_querry, (username,))
 
         if len(check_result) != 0:
           cursor.close()
           connection.close()
           return {"status" : "denied"}, 401
-        dbconnection.insert_querry(cursor, querry, params)
+
+        #add user
+        dbconnection.insert_querry(cursor, querry, (username, password,))
         connection.commit()
         cursor.close()
         connection.close()

@@ -35,7 +35,9 @@ def catalogue():
     # microservice returns a (python) list of movie strings
     # ================================
 
-    movies = []
+    req = requests.get("http://movies:5000/api/movies")
+
+    movies = req.json()["movies"]
 
     return render_template('catalogue.html', username=username, password=password, movies=movies)
 
@@ -124,8 +126,10 @@ def add_friend():
 
 
     data = {'username': username}
+    req = requests.post("http://users:5000/api/add-friend?requester={}&addressee={}".format(username,friend_username))
 
-    success = None
+
+    success = req.status_code == 200
 
     save_to_session('success', success)
 
@@ -152,7 +156,9 @@ def create_group():
 
     data = {'username':username}
 
-    success = None
+    req = requests.post("http://users:5000/api/create-group?administrator={}&groupname={}".format(username, groupname))
+
+    success = req.status_code == 200
 
     save_to_session('create_success', success)
 
@@ -171,8 +177,9 @@ def add_friend_to_group():
     groupname, friend_username = request.form['groupname'], request.form['friendname']
 
     data = {'username': username}
+    req = requests.post("http://users:5000/api/add-friend-to-group?groupname={}&username={}&friendname={}".format(groupname,username, friend_username))
 
-    success = None
+    success = req.status_code == 200
 
     save_to_session('add_success', success)
     return redirect('/groups')
